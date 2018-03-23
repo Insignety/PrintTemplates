@@ -26,7 +26,7 @@
 
 {# Misc. Adjustments #}
 {% set show_shop_name_with_logo = false %}          {# Displays the Shop Name under the Shop Logo #}
-{% set show_thank_you = true %}                     {# Displays "Thank You <Customer Name>!" above bottom barcode #}
+{% set show_thank_you = false %}                     {# Displays "Thank You <Customer Name>!" above bottom barcode #}
 {% set show_transaction_item_count = false %}       {# Gives a total quantity of items sold near the bottom of the receipt #}
 {% set show_sale_lines_on_store_copy = false %}     {# Shows Sale Lines on Credit Card Store Copy receipts #}
 {% set quote_to_invoice = false %}                  {# Changes Quote wording to Invoice in Sales and in Sale Quotes (does not apply to Work Order Quotes) #}
@@ -68,7 +68,13 @@
 		1:{"name":"", "logo_url":""},
 	}
 %}
+
+{#
+	Custom CSS Variables
+#}
+{% set css_color_black = '#212121' %}
 {% set css_color_gray = '#919191' %}
+
 
 {#
 	***End Custom Options***
@@ -80,6 +86,15 @@
 @page { margin: 0px; }
 /* Custom Fonts */
 @font-face {
+  font-display: swap;
+  font-family: 'Nexa';/*nexathin*/
+  src: url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa-thin-webfont.woff2') format('woff2'),
+        url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa-thin-webfont.woff') format('woff');
+  font-weight: 200;
+  font-style: normal;
+}
+@font-face {
+	font-display: swap;
     font-family: 'Nexa';/*nexalight*/
     src: url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa-light-webfont.woff2') format('woff2'),
          url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa-light-webfont.woff') format('woff');
@@ -87,6 +102,7 @@
     font-style: normal;
 }
 @font-face {
+	font-display: swap;
     font-family: 'Nexa';/*nexalight_italic*/
     src: url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa_light_italic-webfont.woff2') format('woff2'),
          url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa_light_italic-webfont.woff') format('woff');
@@ -95,6 +111,7 @@
 }
 
 @font-face {
+	font-display: swap;
     font-family: 'Nexa';/*nexaregular*/
     src: url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa-regular-webfont.woff2') format('woff2'),
          url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa-regular-webfont.woff') format('woff');
@@ -102,6 +119,7 @@
     font-style: normal;
 }
 @font-face {
+	font-display: swap;
     font-family: 'Nexa'; /*nexaregular_italic*/
     src: url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa_italic-webfont.woff2') format('woff2'),
          url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa_italic-webfont.woff') format('woff');
@@ -109,21 +127,21 @@
     font-style: italic;
 }
 @font-face {
+	font-display: swap;
     font-family: 'Nexa'; /*nexabold_italic*/
     src: url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa_bold_italic-webfont.woff2') format('woff2'),
          url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa_bold_italic-webfont.woff') format('woff');
     font-weight: 700;
     font-style: italic;
-
 }
 
 @font-face {
+	font-display: swap;
     font-family: 'Nexa'; /*nexabold*/
     src: url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa_bold-webfont.woff2') format('woff2'),
          url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa_bold-webfont.woff') format('woff');
     font-weight: 700;
     font-style: normal;
-
 }
 /* End Custom Fonts */
 
@@ -132,6 +150,7 @@ body {
 	width: {{parameters.page_width|pageWidthToCss}};
 	margin: 0 auto;
 	padding: 1px; <!-- You need this to make the printer behave -->
+	color: {{ css_color_gray }};
 
 	{% if chrome_right_margin_fix == true %}
 		margin-right: .13in;
@@ -168,22 +187,31 @@ p.details {
 }
 .details__item {
 	display: block;
-	margin-bottom: 30px;
+	margin-bottom: 10px;
 	text-transform: uppercase;
 }
 .details__item__label {
 	display: block;
-	color: {{ css_color_gray }};
 	font-size: 9pt;
+	color: {{ css_color_gray }};
 }
 .details__item__value {
 	display: block;
-	color: #000;
 	font-size: 11pt;
+}
+.footer__note {
+	font-size: 8pt;
+	display: inline-block;
+}
+.footer__note__label {
+	text-transform: uppercase;
+	color: {{ css_color_gray }};	
+}
+.footer__note__value br {
+	display: none;
 }
 
 h2 {
-	border-bottom: 1px solid black;
 	text-transform: uppercase;
 	font-size: 10pt;
 	margin: .5em 0 0;
@@ -208,6 +236,7 @@ h2 {
 
 .receiptShopContact {
 	margin: 0;
+	line-height: 1.5;
 }
 
 table {
@@ -242,13 +271,15 @@ table.payments { text-align: right; }
 table.spacer { margin-top: 1em; }
 table tr.total td { font-weight: bold; }
 
-table td.amount { padding-left: 10px; }
+table td.amount { padding-left: 30px; }
 table td.custom_field {
 	padding-right: 10px;
 	text-align: center;
 }
 
-table.sale { border-top: 2px solid black; }
+table.sale {
+	border-top: 3px solid #474747;
+}
 table.sale tr:first-child th {
 	padding-top: 10pt;
 }
@@ -295,7 +326,11 @@ p.thankyou {
 	text-align: center;
 }
 
-.note { text-align: center; }
+.note {
+	text-align: center;
+	color: {{ css_color_gray }};
+	line-height: 1.1;
+}
 
 
 .barcodeContainer {
@@ -404,9 +439,6 @@ table.payments td.label {
 	@media (min-width: 480px) {
 		/* Emails hacks, don't mind the optimisation */
 		table.saletotals {
-			Float: right;
-			Margin-top: 50px;
-			width: 50% !important;
 		}
 
 		table.payments {
@@ -414,9 +446,7 @@ table.payments td.label {
 		}
 
 		table.payments {
-			Float: left;
 			margin-top: 5px;
-			width: 50%;
 			text-align: left;
 		}
 
@@ -433,14 +463,113 @@ table.payments td.label {
 
 		table.payments td.label {
 			font-weight: bold;
-			text-align: left;
+			text-align: right;
 			white-space: nowrap;
-			width: inherit;
 		}
 	}
 
 /* Email, Letter, A4 only */
 	@media (min-width: 300px) {
+		*, ::after, ::before {
+			box-sizing: border-box;
+		}
+		/* Grid */
+		.row {
+			display: -webkit-box;
+			display: -ms-flexbox;
+			display: flex;
+			-ms-flex-wrap: wrap;
+			flex-wrap: wrap;
+			margin-right: -15px;
+			margin-left: -15px;
+		}
+		.col, .col-1, .col-10, .col-11, .col-12, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-auto, .col-lg, .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-auto, .col-md, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-auto, .col-sm, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-auto, .col-xl, .col-xl-1, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-auto {
+			position: relative;
+			width: 100%;
+			min-height: 1px;
+			padding-right: 15px;
+			padding-left: 15px;
+		}
+		.col {
+			-ms-flex-preferred-size: 0;
+			flex-basis: 0;
+			-webkit-box-flex: 1;
+			-ms-flex-positive: 1;
+			flex-grow: 1;
+			max-width: 100%;
+		}
+		.col-auto {
+			-webkit-box-flex: 0;
+			-ms-flex: 0 0 auto;
+			flex: 0 0 auto;
+			width: auto;
+			max-width: none;
+		}
+		.col-6 {
+			-webkit-box-flex: 0;
+			-ms-flex: 0 0 50%;
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+		/* End Grid */
+		
+		/* Flex */
+		.d-flex {
+			display: -webkit-box!important;
+			display: -ms-flexbox!important;
+			display: flex!important;
+		}
+		.align-items-start {
+			-webkit-box-align: start!important;
+			-ms-flex-align: start!important;
+			align-items: flex-start!important;
+		}
+		.align-items-end {
+			-webkit-box-align: end!important;
+			-ms-flex-align: end!important;
+			align-items: flex-end!important;
+		}
+		.align-items-center {
+			-webkit-box-align: center!important;
+			-ms-flex-align: center!important;
+			align-items: center!important;
+		}
+		.align-items-baseline {
+			-webkit-box-align: baseline!important;
+			-ms-flex-align: baseline!important;
+			align-items: baseline!important;
+		}
+		.align-items-stretch {
+			-webkit-box-align: stretch!important;
+			-ms-flex-align: stretch!important;
+			align-items: stretch!important;
+		}
+		.justify-content-start {
+			-webkit-box-pack: start!important;
+			-ms-flex-pack: start!important;
+			justify-content: flex-start!important;
+		}
+		.justify-content-end {
+			-webkit-box-pack: end!important;
+			-ms-flex-pack: end!important;
+			justify-content: flex-end!important;
+		}
+		.justify-content-center {
+			-webkit-box-pack: center!important;
+			-ms-flex-pack: center!important;
+			justify-content: center!important;
+		}
+		.justify-content-between {
+			-webkit-box-pack: justify!important;
+			-ms-flex-pack: justify!important;
+			justify-content: space-between!important;
+		}
+		.justify-content-around {
+			-ms-flex-pack: distribute!important;
+			justify-content: space-around!important;
+		}
+		/* End Flex */
+
 
 		.show-on-print {
 			display: block;
@@ -450,21 +579,18 @@ table.payments td.label {
 		}
 
 		body {
-			padding: 15px;
+			padding: 15px 30px;
 			position: relative;
 		}
 
 		.receiptHeader {
-			Float: left;
 			position: relative;
-			max-width: 50%;
-			text-align: left;
 		}
 
 		.receiptHeader img {
 			display: block;
-			margin: 0 0 10px;
-			max-width: 120px;
+			margin: 0 auto;
+			max-width: 225px;
 		}
 
 		.receiptHeader h3.receiptShopName {
@@ -475,16 +601,18 @@ table.payments td.label {
 
 		.receiptShopName,
 		.receiptShopContact {
-			text-align: left;
+			text-align: center;
 		}
 
 		.receiptTypeTitle,
 		.receiptTypeTitle span {
-			font-size: 18pt;
-			Float: right;
-			clear: right;
-			text-align: center;
+			font-size: 25pt;
+			font-weight: 200;
+			text-align: left;
 			margin-top: 0;
+			margin-bottom: 36px;
+			padding-left: 30px;
+			text-transform: uppercase;
 		}
 
 		.receiptTypeTitle span.hide-on-print {
@@ -492,116 +620,47 @@ table.payments td.label {
 			display: none;
 		}
 
-		p.date,
-		p.copy {
-			Float: right;
-			clear: right;
+		.details {
+			font-weight: 300;
 		}
-
-		#receiptInfo {
-			clear: both;
-			padding-top: 15px;
-			padding-left: 0px;
-		}
-
-		#receiptInfo:after {
-			content: "";
-			display: table;
-			clear: both;
-		}
-
-		.receiptQuoteIdField,
-		.receiptTicketIdField {
-			clear: right;
-			Float: right;
-		}
-		.receiptQuoteIdLabel,
-		.receiptTicketIdLabel {
-			display: none !important;
-		}
-		#receiptQuoteId,
-		#receiptTicketId {
-			font-size: 14pt;
-			font-weight: bold;
-			display: block;
-			Float: right;
-		}
-
-		.vatNumberField,
-		.companyRegistrationNumberField,
-		.receiptRegisterNameField,
-		.receiptEmployeeNameField {
-			clear: right;
-			Float: right;
-			text-align: right;
-		}
-		.vatNumberField span,
-		.companyRegistrationNumberField span,
-		.receiptRegisterNameField span,
-		.receiptEmployeeNameField span {
-			font-size: 8pt;
-		}
-
-		.receiptCustomerAddressLabel,
-		.receiptEmailLabel {
-			display: none !important;
-		}
-
-		.receiptCompanyNameField,
-		.receiptCustomerNameField,
-		.receiptCustomerVatField,
-		.receiptCustomerCompanyVatField {
-			margin-bottom: 3px;
-			margin-top: 3px;
-		}
-
-		.receiptCompanyNameLabel,
-		.receiptCustomerNameLabel,
-		.receiptCustomerVatLabel,
-		.receiptCustomerCompanyVatLabel {
-			font-size: 11pt;
-			font-weight: bold;
-		}
-		#receiptCompanyName,
-		#receiptCustomerName {
+		.details__item__value {
 			font-size: 12pt;
 		}
 
-		.receiptCompanyNameField,
-		.receiptCustomerNameField,
-		.receiptCustomerVatField,
-		.receiptCustomerCompanyVatField,
-		.receiptCustomerAddressField,
-		.receiptPhonesContainer,
-		.receiptCustomerNoteField {
-			display: block;
-			max-width: 40%;
+		.date.details {
+			
 		}
 
 		table.sale {
 			clear: both;
-			padding-top: 30px;
-		}
-
-		table.sale tbody tr:first-child th,
-		table.sale tbody tr:first-child td {
-			padding-top: 10px;
-		}
-		table.sale tbody tr:last-child th,
-		table.sale tbody tr:last-child td {
-			padding-bottom: 10px;
 		}
 		table.sale tbody th,
 		table.sale tbody td {
 			padding-bottom: 5px;
 			padding-top: 5px;
 		}
+		table.sale tbody tr:first-child th,
+		table.sale tbody tr:first-child td {
+			padding-top: 20px;
+			padding-bottom: 0;
+		}
+		table.sale tbody:last-child tr:last-child th,
+		table.sale tbody:last-child tr:last-child td {
+			padding-bottom: 10px;
+		}
+		table.sale tbody tr th:first-child,
+		table.sale tbody tr td:first-child {
+			padding-left: 30px;
+		}		
 
 		.paymentTitle,
 		.footerSectionTitle {
-			font-size: 12pt;
+			font-weight: 300;
 			padding-top: 15px;
-			text-transform: none;
+			padding-left: 30px;
+			text-transform: uppercase;
+			color: {{ css_color_gray }};
+			margin-bottom: 15px;
 		}
 		.footerSectionTitle {
 			clear: both;
@@ -616,6 +675,17 @@ table.payments td.label {
 			border: none;
 			height: 30px;
 			width: 150px;
+		}
+
+		.note {
+			font-size: 8pt;
+		}
+
+		hr {
+			margin-top: 15px;
+			margin-bottom: 15px;
+			border: 0;
+			border-top: 3px solid #474747;
 		}
 
 	}
@@ -648,13 +718,18 @@ table.payments td.label {
 			<div>
 				{{ _self.ship_to(Sale) }}
 				{{ _self.header(Sale,_context) }}
-				{{ _self.title(Sale,parameters,_context) }}
-				{{ _self.date(Sale) }}
-				{{ _self.sale_details(Sale,_context) }}
+				<div class="row align-items-end">
+					<div class="col-6">
+						{{ _self.title(Sale,parameters,_context) }}
+					</div>
+					<div class="col-6">
+						{{ _self.date(Sale) }}
+						{{ _self.sale_details(Sale,_context) }}
+					</div>
+				</div>
 				{% if not parameters.gift_receipt or show_sale_lines_on_gift_receipt %}
 					{{ _self.receipt(Sale,parameters,false,_context) }}
 				{% endif %}
-
 				{# Item Count Loop #}
 				{% if show_transaction_item_count %}
 					{% set transaction_item_count = 0 %}
@@ -663,6 +738,7 @@ table.payments td.label {
 					{% endfor %}
 					<p>Total Item Count: {{ transaction_item_count }}</p>
 				{% endif %}
+				<hr />
 
 				{% if Sale.quoteID and Sale.Quote.notes|strlen > 0 %}<p id="receiptQuoteNote" class="note quote">{{Sale.Quote.notes|noteformat|raw}}</p>{% endif %}
 
@@ -678,6 +754,93 @@ table.payments td.label {
 						{% endif %}
 					</p>
 				{% endif %}
+
+				<p class="receiptShopContact">
+					<span class="footer__note">
+						<span class="footer__note__label">
+							Retailer
+						</span>
+						<span class="footer__note__value">
+							{{Sale.Shop.name}}
+						</span>
+					</span>
+					<span class="footer__note">
+						<span class="footer__note__label">
+							Address
+						</span>
+						<span class="footer__note__value">
+							{{ _self.address(Sale.Shop.Contact)|raw }}
+						</span>
+					</span>
+					<br />
+					{% for ContactPhone in Sale.Shop.Contact.Phones.ContactPhone %}
+						<span class="footer__note">
+							<span class="footer__note__label">
+								Phone
+							</span>
+							<span class="footer__note__value">
+								{{ContactPhone.number}}
+							</span>
+						</span>
+					{% endfor %}
+					<span class="footer__note">
+						<span class="footer__note__label">
+							Email
+						</span>
+						<span class="footer__note__value">
+						{% for Email in Sale.Shop.Contact.Emails.ContactEmail %}
+							{{Email.address}}
+						{% endfor %}
+						</span>
+					</span>
+					<span class="footer__note">
+						<span class="footer__note__label">
+							Website
+						</span>
+						<span class="footer__note__value">
+							{{Sale.Shop.Contact.Website}}
+						</span>
+					</span>
+					<br/>
+					{% if isVATAndRegistrationNumberOnReceipt() %}
+						{% if Sale.Shop.companyRegistrationNumber|strlen %}
+						<span class="footer__note">
+							<span class="footer__note__label">
+								CC
+							</span>
+							<span class="footer__note__value">
+								{{Sale.Shop.companyRegistrationNumber}}
+							</span>
+						</span>
+						{% endif %}
+						{% if Sale.Shop.vatNumber|strlen %}
+						<span class="footer__note">
+							<span class="footer__note__label">
+								VAT
+							</span>
+							<span class="footer__note__value">
+								{{Sale.Shop.vatNumber}}
+							</span>
+						</span>
+						{% endif %}
+					{% endif %}
+					<span class="footer__note">
+						<span class="footer__note__label">
+							IBAN
+						</span>
+						<span class="footer__note__value">
+							Nl86ABNA0477743218
+						</span>
+					</span>
+					<span class="footer__note">
+						<span class="footer__note__label">
+							BIC
+						</span>
+						<span class="footer__note__value">
+							ABNANL2A
+						</span>
+					</span>
+				</p>
 
 				{% if show_barcode %}
 				<p class="barcodeContainer">
@@ -824,7 +987,7 @@ table.payments td.label {
 		{% if options.show_sale_lines_on_store_copy %}
 			{{ _self.receipt(Sale,parameters,true,options) }}
 		{% else %}
-			<h2 class="paymentTitle">Payments</h2>
+			<h2 class="paymentTitle text-right">Payments</h2>
 			<table class="payments">
 				{{ _self.cc_payment_info(Sale,Payment) }}
 			</table>
@@ -928,12 +1091,17 @@ table.payments td.label {
 {% endmacro %}
 
 {% macro date(Sale) %}
-	<p class="date" id="receiptDateTime">
-		{% if Sale.timeStamp %}
-			{{Sale.timeStamp|correcttimezone|date(getDateTimeFormat())}}
-		{% else %}
-			{{"now"|date(getDateTimeFormat())}}
-		{% endif %}
+	<p class="date details" id="receiptDateTime">
+		<span class="details__item">
+			<span class="details__item__label">Date</span>
+			<span class="details__item__value">
+			{% if Sale.timeStamp %}
+				{{Sale.timeStamp|correcttimezone|date(getDateTimeFormat())}}
+			{% else %}
+				{{"now"|date(getDateTimeFormat())}}
+			{% endif %}
+			</span>
+		</span>
 	</p>
 {% endmacro %}
 
@@ -971,7 +1139,7 @@ table.payments td.label {
 			</span>
 			<br />
 		{% endif %}
-
+		{# Moved this block to footer
 		{% if isVATAndRegistrationNumberOnReceipt() %}
 			{% if Sale.Shop.vatNumber|strlen %}
 				<span class="vatNumberField details__item">
@@ -988,6 +1156,7 @@ table.payments td.label {
 				<br />
 			{% endif %}
 		{% endif %}
+		#}
 
 		{% if Sale.Register %}
 			<span class="receiptRegisterNameField details__item">
@@ -1215,7 +1384,7 @@ table.payments td.label {
 
 	{% if Sale.completed == 'true' and not parameters.gift_receipt %}
 		{% if Sale.SalePayments %}
-			<h2 class="paymentTitle">Payments</h2>
+			<h2 class="paymentTitle text-right">Payments</h2>
 			<table id="receiptPayments" class="payments">
 				<tbody>
 					{% for Payment in Sale.SalePayments.SalePayment %}
@@ -1457,16 +1626,9 @@ table.payments td.label {
 		{% else %}
 			<h3 class="receiptShopName">{{ Sale.Shop.name }}</h3>
 		{% endif %}
-		<p class="receiptShopContact">
-			{% if Sale.Shop.ReceiptSetup.header|strlen > 0 %}
-				<p>{{Sale.Shop.ReceiptSetup.header|nl2br|raw}}</p>
-			{% else %}
-				{{ _self.address(Sale.Shop.Contact) }}
-				{% for ContactPhone in Sale.Shop.Contact.Phones.ContactPhone %}
-					<br />{{ContactPhone.number}}
-				{% endfor %}
-			{% endif %}
-		</p>
+		{% if Sale.Shop.ReceiptSetup.header|strlen > 0 %}
+			<p>{{Sale.Shop.ReceiptSetup.header|nl2br|raw}}</p>
+		{% endif %}
 	</div>
 {% endmacro %}
 
