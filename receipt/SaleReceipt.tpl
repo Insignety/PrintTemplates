@@ -66,12 +66,9 @@
 	{
 		0:{"name":"Example Shop", "logo_url":"http://logo.url.goes/here.jpg"},
 		1:{"name":"", "logo_url":""},
-		2:{"name":"", "logo_url":""},
-		3:{"name":"", "logo_url":""},
-		4:{"name":"", "logo_url":""},
-		5:{"name":"", "logo_url":""}
 	}
 %}
+{% set css_color_gray = '#919191' %}
 
 {#
 	***End Custom Options***
@@ -81,9 +78,57 @@
 {% block extrastyles %}
 
 @page { margin: 0px; }
+/* Custom Fonts */
+@font-face {
+    font-family: 'Nexa';/*nexalight*/
+    src: url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa-light-webfont.woff2') format('woff2'),
+         url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa-light-webfont.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Nexa';/*nexalight_italic*/
+    src: url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa_light_italic-webfont.woff2') format('woff2'),
+         url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa_light_italic-webfont.woff') format('woff');
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Nexa';/*nexaregular*/
+    src: url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa-regular-webfont.woff2') format('woff2'),
+         url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa-regular-webfont.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Nexa'; /*nexaregular_italic*/
+    src: url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa_italic-webfont.woff2') format('woff2'),
+         url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa_italic-webfont.woff') format('woff');
+    font-weight: 400;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'Nexa'; /*nexabold_italic*/
+    src: url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa_bold_italic-webfont.woff2') format('woff2'),
+         url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa_bold_italic-webfont.woff') format('woff');
+    font-weight: 700;
+    font-style: italic;
+
+}
+
+@font-face {
+    font-family: 'Nexa'; /*nexabold*/
+    src: url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa_bold-webfont.woff2') format('woff2'),
+         url('https://s3-eu-west-1.amazonaws.com/promo.insignety.com/fonts/Nexa/fontfabric_-_nexa_bold-webfont.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+
+}
+/* End Custom Fonts */
 
 body {
-	font: normal 10pt 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font: normal 10pt 'Nexa', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	width: {{parameters.page_width|pageWidthToCss}};
 	margin: 0 auto;
 	padding: 1px; <!-- You need this to make the printer behave -->
@@ -102,7 +147,7 @@ body {
 }
 
 .receipt {
-	font: normal 10pt “Helvetica Neue”, Helvetica, Arial, sans-serif;
+	font: normal 10pt 'Nexa', “Helvetica Neue”, Helvetica, Arial, sans-serif;
 }
 
 h1 {
@@ -119,7 +164,22 @@ p.date, p.copy {
 
 p.details {
 	font-size: 10pt;
-	text-align: left;
+	text-align: right;
+}
+.details__item {
+	display: block;
+	margin-bottom: 30px;
+	text-transform: uppercase;
+}
+.details__item__label {
+	display: block;
+	color: {{ css_color_gray }};
+	font-size: 9pt;
+}
+.details__item__value {
+	display: block;
+	color: #000;
+	font-size: 11pt;
 }
 
 h2 {
@@ -169,6 +229,11 @@ table td.quantity, table th.quantity { text-align: center; }
 th.description {
 	width: 100%;
 }
+th.table__th {
+	text-transform: uppercase;
+	color: {{ css_color_gray }};
+	font-weight: 300;
+}
 
 td.amount { white-space: nowrap; }
 
@@ -183,12 +248,12 @@ table td.custom_field {
 	text-align: center;
 }
 
-table.sale { border-bottom: 1px solid black; }
-
-table.sale th {
-	border-bottom: 1px solid black;
-	font-weight: bold;
+table.sale { border-top: 2px solid black; }
+table.sale tr:first-child th {
+	padding-top: 10pt;
 }
+
+table.sale th {}
 
 table div.line_description {
 	text-align: left;
@@ -197,7 +262,6 @@ table div.line_description {
 
 table div.line_note {
 	text-align: left;
-	padding-left: 10px;
 }
 
 table div.line_serial {
@@ -298,6 +362,32 @@ table.payments td.label {
 	padding-right: 20px;
 	text-align: left;
 }
+/* Helper Styles */
+.text-center {
+	text-align: center;
+}
+.text-left {
+	text-align: left;
+}
+.text-right {
+	text-align: right;
+}
+.text-uppercase {
+	text-transform: uppercase;
+}
+.color-gray {
+	color: #919191;
+}
+.float-left {
+	float: left;
+}
+.float-right {
+	float: right;
+}
+.float-none {
+	float: none;
+}
+/* End Helper Styles */
 
 {% if print_layout %}
 
@@ -604,7 +694,7 @@ table.payments td.label {
 						{% if isUnifiedReceipt(Sale.SalePayments) %}
 							<h2 class="paymentTitle">Transaction Details</h2><br />
 							<div id="receiptTransactionDetails">
-								<table>
+								<table class="table">
 									<tbody>
 										{% for Payment in Sale.SalePayments.SalePayment %}
 											{% if Payment.PaymentType.type == 'credit card' and Payment.MetaData.ReceiptData.status != 'error' and Payment.archived == 'false' %}
@@ -852,108 +942,140 @@ table.payments td.label {
 		{% if options.hide_quote_id_on_sale and Sale.completed == 'true' %}
 		{% else %}
 			{% if Sale.quoteID > 0 %}
-				<span class="receiptQuoteIdField">
-					<span class="receiptQuoteIdLabel">
+				<span class="receiptQuoteIdField details__item">
+					<span class="receiptQuoteIdLabel details__item__label">
 						{% if options.quote_to_invoice %}
-							Invoice #:
+							Invoice #
 						{% else %}
-							Quote #:
+							Quote #
 						{% endif %}
 					</span>
-					<span id="receiptQuoteId">{{options.quote_id_prefix}}{{Sale.quoteID}}</span>
-					<br />
+					<span id="receiptQuoteId details__item__value">{{options.quote_id_prefix}}{{Sale.quoteID}}</span>
 				</span>
+				<br />
 			{% endif %}
 		{% endif %}
 
 		{% if options.hide_ticket_number_on_quote and Sale.completed != 'true' and Sale.quoteID > 0 %}
 		{% else %}
-			<span class="receiptTicketIdField">
-				<span class="receiptTicketIdLabel">
-					{% if options.sale_id_instead_of_ticket_number %}Sale: {% else %}Ticket: {% endif %}</span>
-				<span id="receiptTicketId">
+			<span class="receiptTicketIdField details__item">
+				<span class="receiptTicketIdLabel details__item__label">
+					{% if options.sale_id_instead_of_ticket_number %}Sale {% else %}Ticket {% endif %}</span>
+				<span id="receiptTicketId" class="details__item__value">
 					{% if options.sale_id_instead_of_ticket_number %}
 						{{options.sale_id_prefix}}{{Sale.saleID}}
 					{% else %}
 						{{Sale.ticketNumber}}
 					{% endif %}
 				</span>
-				<br />
 			</span>
+			<br />
 		{% endif %}
 
 		{% if isVATAndRegistrationNumberOnReceipt() %}
 			{% if Sale.Shop.vatNumber|strlen %}
-				<span class="vatNumberField">
-					<span class="vatNumberLabel">VAT #: </span>
-					<span id="vatNumber">{{Sale.Shop.vatNumber}}</span>
-					<br />
+				<span class="vatNumberField details__item">
+					<span class="vatNumberLabel details__item__label">VAT # </span>
+					<span id="vatNumber" class="details__item__value">{{Sale.Shop.vatNumber}}</span>
 				</span>
+				<br />
 			{% endif %}
 			{% if Sale.Shop.companyRegistrationNumber|strlen %}
-				<span class="companyRegistrationNumberField">
-					<span class="companyRegistrationNumberLabel">Company registration #: </span>
-					<span id="companyRegistrationNumber">{{Sale.Shop.companyRegistrationNumber}}</span>
-					<br />
+				<span class="companyRegistrationNumberField details__item">
+					<span class="companyRegistrationNumberLabel details__item__label">Company registration # </span>
+					<span id="companyRegistrationNumber" class="details__item__value">{{Sale.Shop.companyRegistrationNumber}}</span>
 				</span>
+				<br />
 			{% endif %}
 		{% endif %}
 
 		{% if Sale.Register %}
-			<span class="receiptRegisterNameField"><span class="receiptRegisterNameLabel">Register: </span><span id="receiptRegisterName">{{Sale.Register.name}}</span><br /></span>
+			<span class="receiptRegisterNameField details__item">
+				<span class="receiptRegisterNameLabel details__item__label">Register </span>
+				<span id="receiptRegisterName" class="details__item__value">{{Sale.Register.name}}</span>
+			</span>
+			<br />
 		{% endif %}
 
 		{% if Sale.Employee %}
-			<span class="receiptEmployeeNameField"><span class="receiptEmployeeNameLabel">Employee: </span><span id="receiptEmployeeName">{{Sale.Employee.firstName}}</span><br /></span>
+			<span class="receiptEmployeeNameField details__item">
+				<span class="receiptEmployeeNameLabel details__item__label">Employee </span>
+				<span id="receiptEmployeeName" class="details__item__value">{{Sale.Employee.firstName}}</span>
+			</span>
+			<br />
 		{% endif %}
 
 		{% if Sale.Customer %}
 			{% if Sale.Customer.company|strlen > 0 %}
-				<span class="receiptCompanyNameField"><span class="receiptCompanyNameLabel">Company: </span><span id="receiptCompanyName">{{Sale.Customer.company}}</span><br /></span>
+				<span class="receiptCompanyNameField details__item">
+					<span class="receiptCompanyNameLabel details__item__label">Company </span>
+					<span id="receiptCompanyName" class="details__item__value">{{Sale.Customer.company}}</span>
+				</span>
+				<br />
 			{% endif %}
 
 			{% if not options.company_name_override or not Sale.Customer.company|strlen > 0 %}
-				<span class="receiptCustomerNameField"><span class="receiptCustomerNameLabel">Customer: </span><span id="receiptCustomerName">{{Sale.Customer.firstName}} {{Sale.Customer.lastName}}</span><br /></span>
+				<span class="receiptCustomerNameField details__item">
+					<span class="receiptCustomerNameLabel details__item__label">Customer </span>
+					<span id="receiptCustomerName" class="details__item__value">{{Sale.Customer.firstName}} {{Sale.Customer.lastName}}</span>
+				</span>
+				<br />
 			{% endif %}
 
 			{% if not options.show_customer_name_only %}
 				{% set ContactAddress = Sale.Customer.Contact.Addresses.ContactAddress %}
 				{% if options.show_full_customer_address and ContactAddress.address1 %}
-					<span class="receiptCustomerAddressField"><span class="receiptCustomerAddressLabel">Address: </span>{{ ContactAddress.address1 }}{% if ContactAddress.city %}, {{ ContactAddress.city }}{% endif %}{% if ContactAddress.state %}, {{ ContactAddress.state }}{% endif %}{% if ContactAddress.zip %}, {{ ContactAddress.zip }}{% endif %}<br /></span>
+					<span class="receiptCustomerAddressField details__item">
+						<span class="receiptCustomerAddressLabel details__item__label">Address </span>
+						<span class="details__item__value">
+						{{ ContactAddress.address1 }}
+						{% if ContactAddress.city %}, {{ ContactAddress.city }}<br />{% endif %}
+						{% if ContactAddress.state %}, {{ ContactAddress.state }}{% endif %}
+						{% if ContactAddress.zip %}, {{ ContactAddress.zip }}{% endif %}
+						</span>
+					</span>
+					<br />
 				{% endif %}
 
-				<span id="receiptPhonesContainer" class="indent">
+				<span id="receiptPhonesContainer" class="details__item">
 					{% for Phone in Sale.Customer.Contact.Phones.ContactPhone %}
-						<span data-automation="receiptPhoneNumber">{{Phone.useType}}: {{Phone.number}}</span><br />
+						<span data-automation="receiptPhoneNumber" class="details__item__label">{{Phone.useType}}</span>
+						<span class="details__item__value">{{Phone.number}}</span>
 					{% endfor %}
 
 					{% for Email in Sale.Customer.Contact.Emails.ContactEmail %}
-						<span class="receiptEmailLabel">Email: </span><span id="receiptEmail">{{Email.address}} ({{Email.useType}})</span><br />
+						<span class="receiptEmailLabel details__item__label">Email </span>
+						<span id="receiptEmail" class="details__item__value">{{Email.address}} ({{Email.useType}})</span>
 					{% endfor %}
 				</span>
+				<br />
 			{% endif %}
 
 			{% if isVATAndRegistrationNumberOnReceipt() %}
 				{% if Sale.Customer.vatNumber|strlen %}
-					<span class="receiptCustomerVatField">
-						<span class="receiptCustomerVatLabel">Customer VAT #: </span>
-						<span id="customerVatNumber">{{Sale.Customer.vatNumber}}</span>
-						<br />
+					<span class="receiptCustomerVatField details__item">
+						<span class="receiptCustomerVatLabel details__item__label">Customer VAT # </span>
+						<span id="customerVatNumber" class="details__item__value">{{Sale.Customer.vatNumber}}</span>
 					</span>
+					<br />
 				{% endif %}
 
 				{% if Sale.Customer.companyRegistrationNumber|strlen %}
-					<span class="receiptCustomerCompanyVatField">
-						<span class="receiptCustomerCompanyVatLabel">Customer company registration #: </span>
-						<span id="customerCompanyVatNumber">{{Sale.Customer.companyRegistrationNumber}}</span>
-						<br />
+					<span class="receiptCustomerCompanyVatField details__item">
+						<span class="receiptCustomerCompanyVatLabel details__item__label">Customer company registration # </span>
+						<span id="customerCompanyVatNumber" class="details__item__value">{{Sale.Customer.companyRegistrationNumber}}</span>
 					</span>
+					<br />
 				{% endif %}
 			{% endif %}
 
 			{% if options.show_customer_notes %}
 				{% if Sale.Customer.Note.note|strlen > 0 %}
-					<span class="receiptCustomerNoteField"><span class="receiptCustomerNoteLabel">Note: </span>{{ Sale.Customer.Note.note|noteformat|raw }}<br /></span>
+					<span class="receiptCustomerNoteField details__item">
+						<span class="receiptCustomerNoteLabel details__item__label">Note </span>
+						<span class="details__item__value">{{ Sale.Customer.Note.note|noteformat|raw }}</span>
+					</span>
+					<br />
 				{% endif %}
 			{% endif %}
 		{% endif %}
@@ -1026,23 +1148,23 @@ table.payments td.label {
 	{% if Sale.SaleLines %}
 		<table class="sale lines">
 			<tr>
-				<th class="description">Item</th>
+				<th class="description table__th">Description</th>
 
 				{% if options.show_custom_sku and options.show_manufacturer_sku %}
-					<th class="custom_field">Custom SKU</th>
-					<th class="custom_field">Man. SKU </th>
+					<th class="custom_field table__th">Custom SKU</th>
+					<th class="custom_field table__th">Man. SKU </th>
 				{% elseif options.show_custom_sku or options.show_manufacturer_sku %}
-					<th class="custom_field">SKU</th>
+					<th class="custom_field table__th">SKU</th>
 				{% endif %}
 
 				{% if options.show_msrp and not parameters.gift_receipt %}
-					<th class="custom_field">MSRP</th>
+					<th class="custom_field table__th">MSRP</th>
 				{% endif %}
 
-				<th class="quantity">#</th>
+				<th class="quantity table__th">Amount</th>
 
 				{% if not parameters.gift_receipt %}
-					<th class="amount">Price</th>
+					<th class="amount table__th">Price</th>
 				{% endif %}
 			</tr>
 			<tbody>
