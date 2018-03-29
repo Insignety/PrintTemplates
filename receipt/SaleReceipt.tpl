@@ -74,6 +74,7 @@
 #}
 {% set css_color_black = '#212121' %}
 {% set css_color_gray = '#919191' %}
+{% set css_color_gray_alt = '#000' %}
 
 
 {#
@@ -150,7 +151,7 @@ body {
 	width: {{parameters.page_width|pageWidthToCss}};
 	margin: 0 auto;
 	padding: 1px; <!-- You need this to make the printer behave -->
-	color: {{ css_color_gray }};
+	color: {{ css_color_gray_alt }};
 
 	{% if chrome_right_margin_fix == true %}
 		margin-right: .13in;
@@ -184,28 +185,60 @@ p.date, p.copy {
 p.details {
 	font-size: 10pt;
 	text-align: right;
+	margin: 10px 0;
+}
+.details + .details {
+	margin-top: 0;
+}
+p.details.date {
+	margin-bottom: 0;
+}
+.details > br {
+	display: none;
 }
 .details__item {
 	display: block;
-	margin-bottom: 10px;
+	margin-bottom: 5px;
 	text-transform: uppercase;
 }
 .details__item__label {
 	display: block;
 	font-size: 9pt;
-	color: {{ css_color_gray }};
+	color: {{ css_color_gray_alt }};
 }
 .details__item__value {
 	display: block;
 	font-size: 11pt;
 }
+
+.receiptTypeTitle {
+	font-size: 20pt;
+	font-weight: 200;
+	margin-bottom: 15px;
+	text-transform: uppercase;
+}
+
+.receiptShopContact {
+	margin: 0;
+	line-height: 1.5;
+	text-align: center;
+}
+.receiptShopContact > br {
+	display: none;
+}
 .footer__note {
 	font-size: 8pt;
-	display: inline-block;
+	display: block;
+	margin-bottom: 5px;
 }
 .footer__note__label {
+	display: block;
 	text-transform: uppercase;
-	color: {{ css_color_gray }};	
+	font-weight: 300;
+	color: {{ css_color_gray_alt }};
+}
+.footer__note__value {
+	display: block;
 }
 .footer__note__value br {
 	display: none;
@@ -234,11 +267,6 @@ h2 {
 	margin: 8px 0 4px;
 }
 
-.receiptShopContact {
-	margin: 0;
-	line-height: 1.5;
-}
-
 table {
 	margin: 0 0;
 	width: 100%;
@@ -260,7 +288,7 @@ th.description {
 }
 th.table__th {
 	text-transform: uppercase;
-	color: {{ css_color_gray }};
+	color: {{ css_color_gray_alt }};
 	font-weight: 300;
 }
 
@@ -328,7 +356,7 @@ p.thankyou {
 
 .note {
 	text-align: center;
-	color: {{ css_color_gray }};
+	color: {{ css_color_gray_alt }};
 	line-height: 1.1;
 }
 
@@ -371,13 +399,15 @@ dl dd p { margin: 0; }
 .receiptCustomerVatField,
 .receiptCustomerCompanyVatField {
 	display: block;
-	padding-top: 5px;
 }
 
 table.payments td.label {
 	font-weight: normal;
 	text-align: right;
 	width: 100%;
+}
+table.saletotals {
+	margin-top: 10px;
 }
 
 #receiptTransactionDetails table {
@@ -424,6 +454,21 @@ table.payments td.label {
 }
 /* End Helper Styles */
 
+@media (max-width: 299px) {
+	/* Make header grayscale and very black */
+	.receiptHeader {
+		/* IE4-8 and 9 (deprecated). */
+		filter: Gray();
+		/* SVG version for IE10, Chrome 17, FF3.5, 
+		Safari 5.2 and Opera 11.6 */
+		filter: url('#grayscale'); 
+		/* CSS3 filter, at the moment Webkit only. Prefix it for
+		future implementations */
+		-webkit-filter: grayscale(100%) brightness(0);
+		filter: grayscale(100%) brightness(0);
+	}
+}
+
 {% if print_layout %}
 
 	/* Receipts only */
@@ -439,6 +484,7 @@ table.payments td.label {
 	@media (min-width: 480px) {
 		/* Emails hacks, don't mind the optimisation */
 		table.saletotals {
+			margin-top: 0;
 		}
 
 		table.payments {
@@ -579,6 +625,7 @@ table.payments td.label {
 		}
 
 		body {
+			color: {{ css_color_gray_alt }};
 			padding: 15px 30px;
 			position: relative;
 		}
@@ -607,12 +654,10 @@ table.payments td.label {
 		.receiptTypeTitle,
 		.receiptTypeTitle span {
 			font-size: 25pt;
-			font-weight: 200;
 			text-align: left;
 			margin-top: 0;
 			margin-bottom: 36px;
 			padding-left: 30px;
-			text-transform: uppercase;
 		}
 
 		.receiptTypeTitle span.hide-on-print {
@@ -625,10 +670,26 @@ table.payments td.label {
 		}
 		.details__item__value {
 			font-size: 12pt;
+			margin-bottom: 10px;
 		}
-
-		.date.details {
-			
+		.details__item__label {
+			color: {{ css_color_gray }};
+		}
+		
+		.receiptShopContact > br {
+			display: block;
+		}
+		.footer__note {
+			display: inline-block;
+			margin-bottom: 0;
+		}
+		.footer__note__label,
+		.footer__note__value {
+			display: inline;
+			font-weight: 400;
+		}
+		.footer__note__label {
+			color: {{ css_color_gray }};	
 		}
 
 		table.sale {
@@ -638,6 +699,9 @@ table.payments td.label {
 		table.sale tbody td {
 			padding-bottom: 5px;
 			padding-top: 5px;
+		}
+		th.table__th {
+			color: {{ css_color_gray }};
 		}
 		table.sale tbody tr:first-child th,
 		table.sale tbody tr:first-child td {
@@ -679,6 +743,7 @@ table.payments td.label {
 
 		.note {
 			font-size: 8pt;
+			color: {{ css_color_gray }};
 		}
 
 		hr {
@@ -799,6 +864,7 @@ table.payments td.label {
 						</span>
 						<span class="footer__note__value">
 							{{Sale.Shop.Contact.Website}}
+							https://insignety.com
 						</span>
 					</span>
 					<br/>
@@ -973,7 +1039,7 @@ table.payments td.label {
 		{% endif %}
 	{% endfor %}
 	{% if(has_non_taxed_item == 'true') %}
-		<p id="noTaxApplied" class="thankyou">* {{ mostranslate('No Tax Applied') }}</p>
+		<p id="noTaxApplied" class="note text-left">* {{ mostranslate('No Tax Applied') }}</p>
 	{% endif %}
 {% endmacro %}
 
