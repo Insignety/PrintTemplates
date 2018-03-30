@@ -176,6 +176,10 @@ h1 {
 	text-align: center;
 }
 
+hr {
+	border-color: {{ css_color_gray_alt }};
+}
+
 p.date, p.copy {
 	font-size: 9pt;
 	margin: 0;
@@ -454,7 +458,7 @@ table.saletotals {
 }
 /* End Helper Styles */
 
-@media (max-width: 299px) {
+@media (max-width: 479px) {
 	/* Make header grayscale and very black */
 	.receiptHeader {
 		/* IE4-8 and 9 (deprecated). */
@@ -515,7 +519,7 @@ table.saletotals {
 	}
 
 /* Email, Letter, A4 only */
-	@media (min-width: 300px) {
+	@media (min-width: 480px) {
 		*, ::after, ::before {
 			box-sizing: border-box;
 		}
@@ -672,9 +676,7 @@ table.saletotals {
 			font-size: 12pt;
 			margin-bottom: 10px;
 		}
-		.details__item__label {
-			color: {{ css_color_gray }};
-		}
+		
 		
 		.receiptShopContact > br {
 			display: block;
@@ -688,9 +690,7 @@ table.saletotals {
 			display: inline;
 			font-weight: 400;
 		}
-		.footer__note__label {
-			color: {{ css_color_gray }};	
-		}
+		
 
 		table.sale {
 			clear: both;
@@ -700,9 +700,7 @@ table.saletotals {
 			padding-bottom: 5px;
 			padding-top: 5px;
 		}
-		th.table__th {
-			color: {{ css_color_gray }};
-		}
+		
 		table.sale tbody tr:first-child th,
 		table.sale tbody tr:first-child td {
 			padding-top: 20px;
@@ -723,7 +721,7 @@ table.saletotals {
 			padding-top: 15px;
 			padding-left: 30px;
 			text-transform: uppercase;
-			color: {{ css_color_gray }};
+			
 			margin-bottom: 15px;
 		}
 		.footerSectionTitle {
@@ -743,9 +741,7 @@ table.saletotals {
 
 		.note {
 			font-size: 8pt;
-			color: {{ css_color_gray }};
 		}
-
 		hr {
 			margin-top: 15px;
 			margin-bottom: 15px;
@@ -756,6 +752,29 @@ table.saletotals {
 	}
 
 {% endif %}
+
+
+@media (min-width: 480px) {
+	hr, table.sale {
+		border-color: {{ css_color_gray }} !important;
+	}
+	.details__item__label {
+		color: {{ css_color_gray }} !important;
+	}
+	.footer__note__label {
+		color: {{ css_color_gray }} !important;	
+	}
+	th.table__th {
+		color: {{ css_color_gray }} !important;
+	}
+	.note {
+		color: {{ css_color_gray }} !important;
+	}
+	.paymentTitle,
+	.footerSectionTitle {
+		color: {{ css_color_gray }} !important;
+	}
+}
 
 {% endblock extrastyles %}
 
@@ -805,6 +824,10 @@ table.saletotals {
 				{% endif %}
 				<hr />
 
+				{% if not parameters.gift_receipt %}
+					{{ _self.no_tax_applied_text(Sale) }}
+				{% endif %}
+
 				{% if Sale.quoteID and Sale.Quote.notes|strlen > 0 %}<p id="receiptQuoteNote" class="note quote">{{Sale.Quote.notes|noteformat|raw}}</p>{% endif %}
 
 				{% if Sale.Shop.ReceiptSetup.generalMsg|strlen > 0 %}<p id="receiptNote" class="note">{{ Sale.Shop.ReceiptSetup.generalMsg|noteformat|raw }}</p>{% endif %}
@@ -812,7 +835,6 @@ table.saletotals {
 				{{ _self.client_workorder_agreement(Sale,_context) }}
 
 				{% if not parameters.gift_receipt %}
-					{{ _self.no_tax_applied_text(Sale) }}
 					<p id="receiptThankYouNote" class="thankyou">
 						{% if show_thank_you %}
 							Thank You {% if Sale.Customer %}{{Sale.Customer.firstName}} {{Sale.Customer.lastName}}{% endif %}!
