@@ -52,9 +52,9 @@
 {% set show_customer_credit_account = true %}       {# Displays Customer Credit Account information at the bottom of receipts #}
 
 {# Logos #}
-{% set logo_width = '225px' %}                      {# Default width is 225px. #}
-{% set logo_height = '' %}                          {# Default height is 55px. #}
-{% set multi_shop_logos = false %}                  {# Allows multiple logos to be added for separate locations when used with options below #}
+{% set logo_width = '225' %}                      {# Default width is 225px. #}
+{% set logo_height = '55' %}                     {# Default height is 55px. #}
+{% set multi_shop_logos = true %}                  {# Allows multiple logos to be added for separate locations when used with options below #}
 
 {#
 	Use the following shop_logo_array to enter all of your locations and the link to the logo image that you have uploaded to the internet.
@@ -64,8 +64,7 @@
 
 {% set shop_logo_array =
 	{
-		0:{"name":"Example Shop", "logo_url":"http://logo.url.goes/here.jpg"},
-		1:{"name":"", "logo_url":""},
+		0:{"name":"Insignety Flagship Store", "logo_url":"https://insignety.com/wp-content/themes/insignety/assets/images/logo-text.svg"}
 	}
 %}
 
@@ -310,7 +309,7 @@ table td.custom_field {
 }
 
 table.sale {
-	border-top: 3px solid #474747;
+	border-top: 2px solid #474747;
 }
 table.sale tr:first-child th {
 	padding-top: 10pt;
@@ -632,6 +631,7 @@ table.saletotals {
 			color: {{ css_color_gray_alt }};
 			padding: 15px 30px;
 			position: relative;
+			font-size: 8pt;
 		}
 
 		.receiptHeader {
@@ -657,7 +657,7 @@ table.saletotals {
 
 		.receiptTypeTitle,
 		.receiptTypeTitle span {
-			font-size: 25pt;
+			font-size: 22pt;
 			text-align: left;
 			margin-top: 0;
 			margin-bottom: 36px;
@@ -673,7 +673,7 @@ table.saletotals {
 			font-weight: 300;
 		}
 		.details__item__value {
-			font-size: 12pt;
+			font-size: 10pt;
 			margin-bottom: 10px;
 		}
 		
@@ -740,13 +740,13 @@ table.saletotals {
 		}
 
 		.note {
-			font-size: 8pt;
+			font-size: 7pt;
 		}
 		hr {
 			margin-top: 15px;
 			margin-bottom: 15px;
 			border: 0;
-			border-top: 3px solid #474747;
+			border-top: 2px solid #474747;
 		}
 
 	}
@@ -760,12 +760,19 @@ table.saletotals {
 	}
 	.details__item__label {
 		color: {{ css_color_gray }} !important;
+		font-size: 6pt;
+	}
+	.footer__note {
+		font-size: 6pt;
 	}
 	.footer__note__label {
 		color: {{ css_color_gray }} !important;	
 	}
-	th.table__th {
+	th.table__th,
+	.paymentTitle,
+	.footerSectionTitle {
 		color: {{ css_color_gray }} !important;
+		font-size: 6pt;
 	}
 	.note {
 		color: {{ css_color_gray }} !important;
@@ -773,6 +780,9 @@ table.saletotals {
 	.paymentTitle,
 	.footerSectionTitle {
 		color: {{ css_color_gray }} !important;
+	}
+	.footer__hr {
+		margin-top: 100px;
 	}
 }
 
@@ -822,7 +832,8 @@ table.saletotals {
 					{% endfor %}
 					<p>Total Item Count: {{ transaction_item_count }}</p>
 				{% endif %}
-				<hr />
+				
+				<hr class="footer__hr" />
 
 				{% if not parameters.gift_receipt %}
 					{{ _self.no_tax_applied_text(Sale) }}
@@ -1699,7 +1710,7 @@ table.saletotals {
 			{% for shop in options.shop_logo_array if not logo_printed %}
 				{% if shop.name == Sale.Shop.name %}
 					{% if shop.logo_url|strlen > 0 %}
-						<img src="{{ shop.logo_url }}" width ={{ options.logo_width }} height="{{ options.logo_height }}" class="logo">
+						<img src="{{ shop.logo_url }}" width="{{ options.logo_width }}" height="{{ options.logo_height }}" class="logo">
 						{% set logo_printed = true %}
 					{% endif %}
 				{% endif %}
@@ -1712,7 +1723,9 @@ table.saletotals {
 				<h3 class="receiptShopName">{{ Sale.Shop.name }}</h3>
 			{% endif %}
 		{% else %}
+			{% if show_shop_name_with_logo %}
 			<h3 class="receiptShopName">{{ Sale.Shop.name }}</h3>
+			{% endif %}
 		{% endif %}
 		{% if Sale.Shop.ReceiptSetup.header|strlen > 0 %}
 			<p>{{Sale.Shop.ReceiptSetup.header|nl2br|raw}}</p>
