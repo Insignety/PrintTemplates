@@ -39,8 +39,8 @@
 {% set hide_quote_id_on_sale = false %}             {# Hides the Quote ID on Sales #}
 
 {# Customer Information #}
-{% set show_full_customer_address = false %}        {# Displays Customers full address, if available #}
-{% set show_customer_name_only = true %}            {# Hides all Customer information except for their name #}
+{% set show_full_customer_address = true %}        {# Displays Customers full address, if available #}
+{% set show_customer_name_only = false %}            {# Hides all Customer information except for their name #}
 {% set show_customer_notes = false %}               {# Displays Notes entered in the Customers profile #}
 {% set company_name_override = false %}             {# Does not display the Customer Name if Company Name is present #}
 
@@ -1268,6 +1268,7 @@ table.saletotals {
 		{% endif %}
 		#}
 
+		{#
 		{% if Sale.Register %}
 			<span class="receiptRegisterNameField details__item">
 				<span class="receiptRegisterNameLabel details__item__label">Register </span>
@@ -1283,51 +1284,50 @@ table.saletotals {
 			</span>
 			<br />
 		{% endif %}
+		#}
 
 		{% if Sale.Customer %}
 			{% if Sale.Customer.company|strlen > 0 %}
 				<span class="receiptCompanyNameField details__item">
-					<span class="receiptCompanyNameLabel details__item__label">Company </span>
+					<span class="receiptCompanyNameLabel details__item__label">Company</span>
 					<span id="receiptCompanyName" class="details__item__value">{{Sale.Customer.company}}</span>
 				</span>
-				<br />
 			{% endif %}
 
 			{% if not options.company_name_override or not Sale.Customer.company|strlen > 0 %}
 				<span class="receiptCustomerNameField details__item">
-					<span class="receiptCustomerNameLabel details__item__label">Customer </span>
+					<span class="receiptCustomerNameLabel details__item__label">Customer</span>
 					<span id="receiptCustomerName" class="details__item__value">{{Sale.Customer.firstName}} {{Sale.Customer.lastName}}</span>
 				</span>
-				<br />
 			{% endif %}
 
 			{% if not options.show_customer_name_only %}
 				{% set ContactAddress = Sale.Customer.Contact.Addresses.ContactAddress %}
 				{% if options.show_full_customer_address and ContactAddress.address1 %}
 					<span class="receiptCustomerAddressField details__item">
-						<span class="receiptCustomerAddressLabel details__item__label">Address </span>
+						<span class="receiptCustomerAddressLabel details__item__label" style="display: none;">Address</span>
 						<span class="details__item__value">
 						{{ ContactAddress.address1 }}
-						{% if ContactAddress.city %}, {{ ContactAddress.city }}<br />{% endif %}
-						{% if ContactAddress.state %}, {{ ContactAddress.state }}{% endif %}
+						{{ ContactAddress.address2 }}
+						{% if ContactAddress.city %}<br /> {{ ContactAddress.city }}{% endif %}
 						{% if ContactAddress.zip %}, {{ ContactAddress.zip }}{% endif %}
+						{% if ContactAddress.state %}, {{ ContactAddress.state }}{% endif %}
+						{% if ContactAddress.country %}<br /> {{ ContactAddress.country }}{% endif %}
 						</span>
 					</span>
-					<br />
 				{% endif %}
 
 				<span id="receiptPhonesContainer" class="details__item">
 					{% for Phone in Sale.Customer.Contact.Phones.ContactPhone %}
-						<span data-automation="receiptPhoneNumber" class="details__item__label">{{Phone.useType}}</span>
-						<span class="details__item__value">{{Phone.number}}</span>
+						<span data-automation="receiptPhoneNumber" class="details__item__label" style="display: none;">{{Phone.useType}}</span>
+						<span class="details__item__value">{{Phone.number}} <small>({{Phone.useType}})</small></span>
 					{% endfor %}
 
 					{% for Email in Sale.Customer.Contact.Emails.ContactEmail %}
-						<span class="receiptEmailLabel details__item__label">Email </span>
-						<span id="receiptEmail" class="details__item__value">{{Email.address}} ({{Email.useType}})</span>
+						<span class="receiptEmailLabel details__item__label" style="display: none;">Email </span>
+						<span id="receiptEmail" class="details__item__value">{{Email.address}}</span>
 					{% endfor %}
 				</span>
-				<br />
 			{% endif %}
 
 			{% if isVATAndRegistrationNumberOnReceipt() %}
