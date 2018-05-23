@@ -308,8 +308,7 @@ table td.custom_field {
 	text-align: center;
 }
 
-table.sale,
-table.workorders {
+table.sale {
 	border-top: 2px solid #474747;
 }
 table.sale tr:first-child th,
@@ -791,6 +790,7 @@ table.saletotals {
 	.paymentTitle,
 	.footerSectionTitle {
 		color: {{ css_color_gray }} !important;
+		margin-bottom: 0;
 	}
 	.footer__hr {
 		margin-top: 100px;
