@@ -315,14 +315,19 @@ table td.custom_field {
 }
 
 table.sale {
-	border-top: 2px solid #474747;
+	border-top: 2px solid {{ css_color_gray }};
+	border-bottom: 2px solid {{ css_color_gray }};
+	margin-bottom: 10pt;
 }
 table.sale tr:first-child th,
 table.workorders tr:first-child th {
 	padding-top: 10pt;
 }
 
-table.sale th {}
+table.lines tr td,
+table.lines tr th {
+	border-bottom: 1px solid {{ css_color_gray }};
+}
 
 table div.line_description {
 	text-align: left;
@@ -721,29 +726,9 @@ table.saletotals {
 		table.sale tbody td,
 		table.workorders tbody th,
 		table.workorders tbody td {
-			padding-bottom: 5px;
-			padding-top: 5px;
-		}
-		
-		table.sale tbody tr:first-child th,
-		table.sale tbody tr:first-child td,
-		table.workorders tbody tr:first-child th,
-		table.workorders tbody tr:first-child td {
-			padding-top: 20px;
-			padding-bottom: 0;
-		}
-		table.sale tbody:last-child tr:last-child th,
-		table.sale tbody:last-child tr:last-child td,
-		table.workorders tbody:last-child tr:last-child th,
-		table.workorders tbody:last-child tr:last-child td {
 			padding-bottom: 10px;
+			padding-top: 10px;
 		}
-		table.sale tbody tr th:first-child,
-		table.sale tbody tr td:first-child,
-		table.workorders tbody tr th:first-child,
-		table.workorders tbody tr td:first-child {
-			padding-left: 30px;
-		}		
 
 		.paymentTitle,
 		.footerSectionTitle {
@@ -802,7 +787,7 @@ table.saletotals {
 	.paymentTitle,
 	.footerSectionTitle {
 		color: {{ css_color_gray }} !important;
-		font-size: 6pt;
+		font-size: 10pt;
 	}
 	.note {
 		color: {{ css_color_gray }} !important;
@@ -1593,7 +1578,7 @@ table.saletotals {
 
 		{% if options.show_customer_credit_account and Sale.Customer and not parameters.gift_receipt and not store_copy %}
 			{% if Sale.Customer.CreditAccount and Sale.Customer.CreditAccount.MetaData.creditBalanceOwed > 0 or Sale.Customer.CreditAccount.MetaData.extraDeposit > 0 %}
-				<h2 class="footerSectionTitle">Store Account</h2>
+				<h2 class="footerSectionTitle text-right">Store Account</h2>
 				<table class="totals">
 					{% if Sale.Customer.CreditAccount.MetaData.creditBalanceOwed > 0 %}
 						<tr>
