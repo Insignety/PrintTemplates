@@ -43,6 +43,9 @@
 {% set show_customer_name_only = false %}            {# Hides all Customer information except for their name #}
 {% set show_customer_notes = false %}               {# Displays Notes entered in the Customers profile #}
 {% set company_name_override = true %}             {# Does not display the Customer Name if Company Name is present #}
+{% set show_customer_email = false %}
+{% set show_customer_vat = false %}
+{% set show_customer_company_number = false %}
 
 {# Customer Account #}
 {% set show_credit_account_signature = false %}     {# Prints Store Copy with signature line on accounts that use an Account Credit (not Deposit) #}
@@ -207,7 +210,8 @@ p.details.date {
 	margin-bottom: 5px;
 	text-transform: uppercase;
 }
-#receiptInfoCustomer .details__item {
+#receiptInfoCustomer .details__item,
+#receiptInfoInsignety .details__item {
 	text-transform: none;
 }
 .details__item__label {
@@ -579,11 +583,23 @@ table.saletotals {
 			width: auto;
 			max-width: none;
 		}
+		.col-5 {
+			-webkit-box-flex: 0;
+			-ms-flex: 0 0 41.666667%;
+			flex: 0 0 41.666667%;
+			max-width: 41.666667%;
+		}
 		.col-6 {
 			-webkit-box-flex: 0;
 			-ms-flex: 0 0 50%;
 			flex: 0 0 50%;
 			max-width: 50%;
+		}
+		.col-7 {
+			-webkit-box-flex: 0;
+			-ms-flex: 0 0 58.333333%;
+			flex: 0 0 58.333333%;
+			max-width: 58.333333%;
 		}
 		/* End Grid */
 		
@@ -685,9 +701,8 @@ table.saletotals {
 		.receiptTypeTitle span {
 			font-size: 30pt;
 			text-align: left;
-			margin-top: 0;
-			margin-bottom: 36px;
-			padding-left: 30px;
+			margin-top: 30px;
+			margin-bottom: 30px;
 		}
 
 		.receiptTypeTitle span.hide-on-print {
@@ -829,10 +844,18 @@ table.saletotals {
 				{{ _self.ship_to(Sale) }}
 				{{ _self.header(Sale,_context) }}
 				<div class="row align-items-end">
-					<div class="col-6">
-						{{ _self.sale_details_customer(Sale,_context) }}
+					<div class="col-7">
+						<div class="row align-items-start">
+							<div class="col-6">
+								{{ _self.sale_details_insignety(Sale,_context) }}
+							</div>
+							<div class="col-6">
+								{{ _self.sale_details_customer(Sale,_context) }}
+							</div>
+						</div>
+						
 					</div>
-					<div class="col-6">
+					<div class="col-5">
 						{{ _self.date(Sale) }}
 						{{ _self.sale_details(Sale,_context) }}
 					</div>
@@ -1248,7 +1271,7 @@ table.saletotals {
 		{% else %}
 			<span class="receiptTicketIdField details__item">
 				<span class="receiptTicketIdLabel details__item__label">
-					{% if options.sale_id_instead_of_ticket_number %}Sale {% else %}Ticket {% endif %}</span>
+					{% if options.sale_id_instead_of_ticket_number %}Sale {% else %}Invoice {% endif %}</span>
 				<span id="receiptTicketId" class="details__item__value">
 					{% if options.sale_id_instead_of_ticket_number %}
 						{{options.sale_id_prefix}}{{Sale.saleID}}
@@ -1298,26 +1321,29 @@ table.saletotals {
 {% macro sale_details_customer(Sale,options) %}
 	<p id="receiptInfoCustomer" class="details">
 		{% if Sale.Customer %}
+			<span class="receiptCompanyNameField details__item">
+				<span class="receiptCompanyNameLabel details__item__label text-uppercase">Shipping Address</span>
+			</span>
 			{% if Sale.Customer.company|strlen > 0 %}
-				<span class="receiptCompanyNameField details__item">
-					<span class="receiptCompanyNameLabel details__item__label sr-only" >Company</span>
-					<span id="receiptCompanyName" class="details__item__value">{{Sale.Customer.company}}</span>
+				<span class="receiptCompanyNameField details__item mb-0">
+					<span class="receiptCompanyNameLabel details__item__label sr-only">Company</span>
+					<span id="receiptCompanyName" class="details__item__value mb-0"><b>{{Sale.Customer.company}}</b></span>
 				</span>
 			{% endif %}
 
 			{% if not options.company_name_override or not Sale.Customer.company|strlen > 0 %}
-				<span class="receiptCustomerNameField details__item">
+				<span class="receiptCustomerNameField details__item mb-0">
 					<span class="receiptCustomerNameLabel details__item__label sr-only">Customer</span>
-					<span id="receiptCustomerName" class="details__item__value">{{Sale.Customer.firstName}} {{Sale.Customer.lastName}}</span>
+					<span id="receiptCustomerName" class="details__item__value mb-0"><b>{{Sale.Customer.firstName}} {{Sale.Customer.lastName}}</b></span>
 				</span>
 			{% endif %}
 
 			{% if not options.show_customer_name_only %}
 				{% set ContactAddress = Sale.Customer.Contact.Addresses.ContactAddress %}
 				{% if options.show_full_customer_address and ContactAddress.address1 %}
-					<span class="receiptCustomerAddressField details__item">
+					<span class="receiptCustomerAddressField details__item mb-0">
 						<span class="receiptCustomerAddressLabel details__item__label sr-only">Address</span>
-						<span class="details__item__value">
+						<span class="details__item__value mb-0">
 						{{ ContactAddress.address1 }}
 						{{ ContactAddress.address2 }}
 						{% if ContactAddress.city %}<br /> {{ ContactAddress.city }}{% endif %}
@@ -1331,28 +1357,30 @@ table.saletotals {
 				<span id="receiptPhonesContainer" class="details__item">
 					{% for Phone in Sale.Customer.Contact.Phones.ContactPhone %}
 						<span data-automation="receiptPhoneNumber" class="details__item__label sr-only">{{Phone.useType}}</span>
-						<span class="details__item__value mb-0">{{Phone.number}} <small>({{Phone.useType}})</small></span>
+						<span class="details__item__value mb-0"><small>TEL</small>: {{Phone.number}}</span>
 					{% endfor %}
 
-					{% for Email in Sale.Customer.Contact.Emails.ContactEmail %}
-						<span class="receiptEmailLabel details__item__label sr-only">Email </span>
-						<span id="receiptEmail" class="details__item__value">{{Email.address}}</span>
-					{% endfor %}
+					{% if options.show_customer_email %}
+						{% for Email in Sale.Customer.Contact.Emails.ContactEmail %}
+							<span class="receiptEmailLabel details__item__label sr-only">Email </span>
+							<span id="receiptEmail" class="details__item__value">{{Email.address}}</span>
+						{% endfor %}
+					{% endif %}
 				</span>
 			{% endif %}
 
 			{% if isVATAndRegistrationNumberOnReceipt() %}
-				{% if Sale.Customer.vatNumber|strlen %}
+				{% if Sale.Customer.vatNumber|strlen and options.show_customer_vat %}
 					<span class="receiptCustomerVatField details__item">
-						<span class="receiptCustomerVatLabel details__item__label text-uppercase">Customer VAT # </span>
+						<span class="receiptCustomerVatLabel details__item__label sr-only">Customer VAT # </span>
 						<span id="customerVatNumber" class="details__item__value">{{Sale.Customer.vatNumber}}</span>
 					</span>
 					<br />
 				{% endif %}
 
-				{% if Sale.Customer.companyRegistrationNumber|strlen %}
+				{% if Sale.Customer.companyRegistrationNumber|strlen  and options.show_customer_company_number %}
 					<span class="receiptCustomerCompanyVatField details__item">
-						<span class="receiptCustomerCompanyVatLabel details__item__label text-uppercase">Customer company registration # </span>
+						<span class="receiptCustomerCompanyVatLabel details__item__label sr-only">Customer company registration # </span>
 						<span id="customerCompanyVatNumber" class="details__item__value">{{Sale.Customer.companyRegistrationNumber}}</span>
 					</span>
 					<br />
@@ -1371,6 +1399,21 @@ table.saletotals {
 		{% endif %}
 	</p>
 {% endmacro %}
+
+{% macro sale_details_insignety(Sale,options) %}
+	<p id="receiptInfoInsignety" class="details">
+		<span class="receiptCompanyNameField details__item">
+			<span class="receiptCompanyNameLabel details__item__label text-uppercase">Billing Address</span>
+		</span>
+		<span class="receiptCompanyNameField details__item">
+			<span class="details__item__value mb-0"><b>Insignety</b></span>
+			<span class="details__item__value mb-0">Kingsfordweg 151<br/> Amsterdam, 1043 GR<br/> Netherlands</span>
+			<span class="details__item__value"><small>TEL</small>: +31 (0) 20 785 25 28</span>
+			<span class="details__item__value mb-0"><small>VAT</small>: NL8541.47.901.b.01</span>			
+		</span>
+	</p>
+{% endmacro %}
+
 
 {% macro line(isTaxInclusive,Line,parameters,options) %}
 	<tr>
