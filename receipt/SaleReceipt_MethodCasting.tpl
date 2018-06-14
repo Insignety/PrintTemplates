@@ -31,12 +31,13 @@
 {% set show_sale_lines_on_store_copy = false %}     {# Shows Sale Lines on Credit Card Store Copy receipts #}
 {% set quote_to_invoice = false %}                  {# Changes Quote wording to Invoice in Sales and in Sale Quotes (does not apply to Work Order Quotes) #}
 {% set show_sale_lines_on_gift_receipt = true %}    {# Displays Sale Lines on Gift Receipts #}
-{% set show_barcode = true %}                       {# Displays barcode at bottom of receipts #}
-{% set show_barcode_sku = true %}                   {# Displays the System ID at the bottom of barcodes #}
+{% set show_barcode = false %}                       {# Displays barcode at bottom of receipts #}
+{% set show_barcode_sku = false %}                   {# Displays the System ID at the bottom of barcodes #}
 {% set show_workorders_barcode = false %}           {# Displays workorders barcode #}
-{% set show_workorders_barcode_sku = true %}        {# Displays the System ID at the bottom of workorders barcodes #}
+{% set show_workorders_barcode_sku = false %}        {# Displays the System ID at the bottom of workorders barcodes #}
 {% set hide_ticket_number_on_quote = false %}       {# Hides the Ticket Number on Quotes #}
 {% set hide_quote_id_on_sale = false %}             {# Hides the Quote ID on Sales #}
+{% set hide_sale_payments_store_account_tables = false %}
 
 {# Customer Information #}
 {% set show_full_customer_address = true %}        {# Displays Customers full address, if available #}
@@ -44,7 +45,7 @@
 {% set show_customer_notes = false %}               {# Displays Notes entered in the Customers profile #}
 {% set company_name_override = true %}             {# Does not display the Customer Name if Company Name is present #}
 {% set show_customer_email = false %}
-{% set show_customer_vat = false %}
+{% set show_customer_vat = true %}
 {% set show_customer_company_number = false %}
 
 {# Customer Account #}
@@ -52,7 +53,7 @@
 {% set show_customer_layaways = true %}             {# Displays Customer Layaway information at the bottom of receipts #}
 {% set show_customer_specialorders = true %}        {# Displays Customer Special Order information at the bottom of receipts #}
 {% set show_customer_workorders = true %}           {# Displays Customer Work Order information at the bottom of receipts #}
-{% set show_customer_credit_account = true %}       {# Displays Customer Credit Account information at the bottom of receipts #}
+{% set show_customer_credit_account = false %}       {# Displays Customer Credit Account information at the bottom of receipts #}
 
 {# Logos #}
 {% set logo_width = '225' %}                      {# Default width is 225px. #}
@@ -1282,6 +1283,7 @@ table.saletotals {
 			</span>
 			<br />
 		{% endif %}
+		{#
 		{% if isVATAndRegistrationNumberOnReceipt() %}
 			{% if Sale.Shop.vatNumber|strlen %}
 				<span class="vatNumberField details__item">
@@ -1298,6 +1300,7 @@ table.saletotals {
 				<br />
 			{% endif %}
 		{% endif %}
+		#}
 
 		{#
 		{% if Sale.Register %}
@@ -1373,7 +1376,7 @@ table.saletotals {
 				{% if Sale.Customer.vatNumber|strlen and options.show_customer_vat %}
 					<span class="receiptCustomerVatField details__item">
 						<span class="receiptCustomerVatLabel details__item__label sr-only">Customer VAT # </span>
-						<span id="customerVatNumber" class="details__item__value">{{Sale.Customer.vatNumber}}</span>
+						<span id="customerVatNumber" class="details__item__value"><small>VAT</small>: {{Sale.Customer.vatNumber}}</span>
 					</span>
 					<br />
 				{% endif %}
@@ -1407,8 +1410,7 @@ table.saletotals {
 		</span>
 		<span class="receiptCompanyNameField details__item">
 			<span class="details__item__value mb-0"><b>Insignety</b></span>
-			<span class="details__item__value mb-0">Kingsfordweg 151<br/> Amsterdam, 1043 GR<br/> Netherlands</span>
-			<span class="details__item__value"><small>TEL</small>: +31 (0) 20 785 25 28</span>
+			<span class="details__item__value">Kingsfordweg 151<br/> Amsterdam, 1043 GR<br/> Netherlands</span>
 			<span class="details__item__value mb-0"><small>VAT</small>: NL8541.47.901.b.01</span>			
 		</span>
 	</p>
@@ -1546,7 +1548,7 @@ table.saletotals {
 		{% endif %}
 	{% endif %}
 
-	{% if Sale.completed == 'true' and not parameters.gift_receipt %}
+	{% if Sale.completed == 'true' and hide_sale_payments_store_account_tables and not parameters.gift_receipt %}
 		{% if Sale.SalePayments %}
 			<h2 class="paymentTitle text-right">Payments</h2>
 			<table id="receiptPayments" class="payments">
