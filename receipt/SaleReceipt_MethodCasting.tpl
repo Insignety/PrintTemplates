@@ -10,7 +10,7 @@
 
 {# Sale #}
 {% set sale_id_instead_of_ticket_number = false %}  {# Displays the Sale ID instead of the Ticket Number #}
-{% set invoice_as_title = false %}                  {# If print_layout is true, "Invoice" will be displayed instead of "Sales Receipt" on A4/Letter/Email formats #}
+{% set invoice_as_title = true %}                  {# If print_layout is true, "Invoice" will be displayed instead of "Sales Receipt" on A4/Letter/Email formats #}
 {% set workorders_as_title = false %}               {# Changes the receipt title to "Work Orders" if there is no Salesline items and 1 or more workorders #}
 {% set quote_id_prefix = "" %}                      {# Adds a string of text as a prefix for the Quote ID. Ex: "Q-". To be used when "sale_id_instead_of_ticket_number" is true #}
 {% set sale_id_prefix = "" %}                       {# Adds a string of text as a prefix for the Sales ID. Ex: "S-". To be used when "sale_id_instead_of_ticket_number" is true #}
@@ -42,7 +42,7 @@
 {% set show_full_customer_address = true %}        {# Displays Customers full address, if available #}
 {% set show_customer_name_only = false %}            {# Hides all Customer information except for their name #}
 {% set show_customer_notes = false %}               {# Displays Notes entered in the Customers profile #}
-{% set company_name_override = false %}             {# Does not display the Customer Name if Company Name is present #}
+{% set company_name_override = true %}             {# Does not display the Customer Name if Company Name is present #}
 
 {# Customer Account #}
 {% set show_credit_account_signature = false %}     {# Prints Store Copy with signature line on accounts that use an Account Credit (not Deposit) #}
@@ -187,8 +187,11 @@ p.date, p.copy {
 
 p.details {
 	font-size: 10pt;
-	text-align: right;
 	margin: 10px 0;
+}
+#receiptInfo,
+#receiptDateTime {
+	text-align: right;
 }
 .details + .details {
 	margin-top: 0;
@@ -204,6 +207,9 @@ p.details.date {
 	margin-bottom: 5px;
 	text-transform: uppercase;
 }
+#receiptInfoCustomer .details__item {
+	text-transform: none;
+}
 .details__item__label {
 	display: block;
 	font-size: 9pt;
@@ -216,7 +222,7 @@ p.details.date {
 
 .receiptTypeTitle {
 	font-size: 20pt;
-	font-weight: 200;
+	font-weight: 500;
 	margin-bottom: 15px;
 	text-transform: uppercase;
 }
@@ -456,6 +462,19 @@ table.saletotals {
 .float-none {
 	float: none;
 }
+.mb-0 {
+	margin-bottom: 0 !important;
+}
+.sr-only {
+	position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+}
 /* End Helper Styles */
 
 @media (max-width: 479px) {
@@ -637,6 +656,7 @@ table.saletotals {
 
 		.receiptHeader {
 			position: relative;
+			margin-bottom: 2em;
 		}
 
 		.receiptHeader img {
@@ -658,7 +678,7 @@ table.saletotals {
 
 		.receiptTypeTitle,
 		.receiptTypeTitle span {
-			font-size: 22pt;
+			font-size: 30pt;
 			text-align: left;
 			margin-top: 0;
 			margin-bottom: 36px;
@@ -825,11 +845,16 @@ table.saletotals {
 				{{ _self.header(Sale,_context) }}
 				<div class="row align-items-end">
 					<div class="col-6">
-						{{ _self.title(Sale,parameters,_context) }}
+						{{ _self.sale_details_customer(Sale,_context) }}
 					</div>
 					<div class="col-6">
 						{{ _self.date(Sale) }}
 						{{ _self.sale_details(Sale,_context) }}
+					</div>
+				</div>
+				<div class="row align-items-end">
+					<div class="col-6">
+						{{ _self.title(Sale,parameters,_context) }}
 					</div>
 				</div>
 				{% if not parameters.gift_receipt or show_sale_lines_on_gift_receipt %}
@@ -1249,7 +1274,6 @@ table.saletotals {
 			</span>
 			<br />
 		{% endif %}
-		{# Moved this block to footer
 		{% if isVATAndRegistrationNumberOnReceipt() %}
 			{% if Sale.Shop.vatNumber|strlen %}
 				<span class="vatNumberField details__item">
@@ -1266,7 +1290,6 @@ table.saletotals {
 				<br />
 			{% endif %}
 		{% endif %}
-		#}
 
 		{#
 		{% if Sale.Register %}
@@ -1285,18 +1308,21 @@ table.saletotals {
 			<br />
 		{% endif %}
 		#}
-
+	</p>
+{% endmacro %}
+{% macro sale_details_customer(Sale,options) %}
+	<p id="receiptInfoCustomer" class="details">
 		{% if Sale.Customer %}
 			{% if Sale.Customer.company|strlen > 0 %}
 				<span class="receiptCompanyNameField details__item">
-					<span class="receiptCompanyNameLabel details__item__label">Company</span>
+					<span class="receiptCompanyNameLabel details__item__label sr-only" >Company</span>
 					<span id="receiptCompanyName" class="details__item__value">{{Sale.Customer.company}}</span>
 				</span>
 			{% endif %}
 
 			{% if not options.company_name_override or not Sale.Customer.company|strlen > 0 %}
 				<span class="receiptCustomerNameField details__item">
-					<span class="receiptCustomerNameLabel details__item__label">Customer</span>
+					<span class="receiptCustomerNameLabel details__item__label sr-only">Customer</span>
 					<span id="receiptCustomerName" class="details__item__value">{{Sale.Customer.firstName}} {{Sale.Customer.lastName}}</span>
 				</span>
 			{% endif %}
@@ -1305,7 +1331,7 @@ table.saletotals {
 				{% set ContactAddress = Sale.Customer.Contact.Addresses.ContactAddress %}
 				{% if options.show_full_customer_address and ContactAddress.address1 %}
 					<span class="receiptCustomerAddressField details__item">
-						<span class="receiptCustomerAddressLabel details__item__label" style="display: none;">Address</span>
+						<span class="receiptCustomerAddressLabel details__item__label sr-only">Address</span>
 						<span class="details__item__value">
 						{{ ContactAddress.address1 }}
 						{{ ContactAddress.address2 }}
@@ -1319,12 +1345,12 @@ table.saletotals {
 
 				<span id="receiptPhonesContainer" class="details__item">
 					{% for Phone in Sale.Customer.Contact.Phones.ContactPhone %}
-						<span data-automation="receiptPhoneNumber" class="details__item__label" style="display: none;">{{Phone.useType}}</span>
-						<span class="details__item__value">{{Phone.number}} <small>({{Phone.useType}})</small></span>
+						<span data-automation="receiptPhoneNumber" class="details__item__label sr-only">{{Phone.useType}}</span>
+						<span class="details__item__value mb-0">{{Phone.number}} <small>({{Phone.useType}})</small></span>
 					{% endfor %}
 
 					{% for Email in Sale.Customer.Contact.Emails.ContactEmail %}
-						<span class="receiptEmailLabel details__item__label" style="display: none;">Email </span>
+						<span class="receiptEmailLabel details__item__label sr-only">Email </span>
 						<span id="receiptEmail" class="details__item__value">{{Email.address}}</span>
 					{% endfor %}
 				</span>
@@ -1333,7 +1359,7 @@ table.saletotals {
 			{% if isVATAndRegistrationNumberOnReceipt() %}
 				{% if Sale.Customer.vatNumber|strlen %}
 					<span class="receiptCustomerVatField details__item">
-						<span class="receiptCustomerVatLabel details__item__label">Customer VAT # </span>
+						<span class="receiptCustomerVatLabel details__item__label text-uppercase">Customer VAT # </span>
 						<span id="customerVatNumber" class="details__item__value">{{Sale.Customer.vatNumber}}</span>
 					</span>
 					<br />
@@ -1341,7 +1367,7 @@ table.saletotals {
 
 				{% if Sale.Customer.companyRegistrationNumber|strlen %}
 					<span class="receiptCustomerCompanyVatField details__item">
-						<span class="receiptCustomerCompanyVatLabel details__item__label">Customer company registration # </span>
+						<span class="receiptCustomerCompanyVatLabel details__item__label text-uppercase">Customer company registration # </span>
 						<span id="customerCompanyVatNumber" class="details__item__value">{{Sale.Customer.companyRegistrationNumber}}</span>
 					</span>
 					<br />
