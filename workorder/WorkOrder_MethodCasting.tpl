@@ -1,4 +1,6 @@
 {% extends parameters.print ? "printbase" : "base" %}
+{% set show_barcode = false %}                       {# Displays barcode at bottom of receipts #}
+
 {% block extrastyles %}
 
 {#
@@ -17,6 +19,28 @@ body {
 }
 .pagebreak {
     page-break-after: always;
+}
+
+@page {
+  size: A4;
+  margin: 11mm 17mm 17mm 17mm;
+}
+
+@media print {
+  footer {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+  }
+
+  .content-block, p {
+    page-break-inside: avoid;
+  }
+
+  html, body {
+    width: 210mm;
+    height: 297mm;
+  }
 }
 
 /* Custom Fonts */
@@ -94,7 +118,7 @@ body {
 
 .receiptTypeTitle {
     font-size: 20pt;
-    font-weight: 200;
+    font-weight: 500;
     margin-bottom: 15px;
     text-transform: uppercase;
 }
@@ -148,57 +172,69 @@ th.table__th {
 	text-transform: uppercase;
 	color: {{ css_color_gray_alt }};
 	font-weight: 300;
+    padding: 10pt 5px;
+    border-bottom: 1px solid {{ css_color_gray }};
+}
+.table__th.description {
+    width: 100%;
 }
 
 table.lines td {
-    padding: 4px 0;
+    padding: 10px 5px;
+    border-bottom: 1px solid {{ css_color_gray }};
+}
+table.lines tbody:last-child tr:last-child td {
+    border-bottom: 0;
+}
+table.lines td:first-child {
+    padding-left: 0
+}
+table.lines td:last-child {
+    padding-right: 0
 }
 
+table.totals {
+    border-top: 2px solid {{ css_color_gray }};
+    width: 300px;
+    float: right;
+    clear: both;
+    overflow: hidden;
+}
 table.totals td {
     margin: 0px;
 }
 table.totals td.amount {
     padding-left: 30px;
 }
-
-table.lines tbody tr th:first-child,
-table.lines tbody tr td:first-child {
-    padding-left: 30px;
-}
-table.lines tbody tr:first-child th,
-table.lines tbody tr:first-child td {
-    padding-top: 20px;
-    padding-bottom: 0;
-}
-
 table.lines .td__notes {
     margin-left: 15px;
 }
-
 table td.amount {
     width: 10%;
     text-align: right;
 }
-        
 table.totals {
     text-align: right;
 }
-
+table.totals tr:first-child td {
+    padding-top: 10px;
+}
 table.totals tr td:first-child {
     padding-right: 10px;
 }
-
 table tr.total td {
     font-weight: bold;
 }
-
-table .description {
+table td.description {
     font-weight: bold;
 }
 
 table p {
     font-weight: normal;
     margin: 0;
+}
+table td.quantity, table th.quantity {
+    text-align: center;
 }
 
 .notes {
@@ -400,19 +436,18 @@ img.barcode {
         border-top: 2px solid {{ css_color_gray }};
     }
 
-    .receiptTypeTitle, .receiptTypeTitle span {
-        font-size: 22pt;
+    .receiptTypeTitle {
+        font-size: 30pt;
         text-align: left;
-        margin-top: 0;
-        margin-bottom: 36px;
-        padding-left: 30px;
+        margin-top: 20px;
+        margin-bottom: 0;
     }
 
     th.table__th,
 	.paymentTitle,
 	.footerSectionTitle {
 		color: {{ css_color_gray }} !important;
-		font-size: 6pt;
+		font-size: 10pt;
 	}
 
     .details {
@@ -438,7 +473,8 @@ img.barcode {
         font-weight: 400;
     }
     .footer__hr {
-        margin-top: 100px;
+        margin-top: 15px;
+        clear: both;
     }
     .notes {
         font-size: 7pt;
@@ -450,6 +486,26 @@ img.barcode {
         width: 150px;
     }
 
+}
+.clear {
+    display: table;
+    width: 100%;
+    clear: both;
+}
+.text-left {
+    text-align: left !important;
+}
+.text-right {
+    text-align: right !important;
+}
+.text-center {
+    text-align: center !important;
+}
+.text-uppercase {
+    text-transform: uppercase;
+}
+.mb-0 {
+    margin-bottom: 0 !important;
 }
 
 {% endblock extrastyles %}
@@ -471,51 +527,9 @@ img.barcode {
                         {{ Workorder.Shop.ReceiptSetup.header|nl2br|raw }}
                     {% endif %}
                 {% endif %}
-                <div class="row align-items-end">
+                <div class="row align-items-start">
                     <div class="col-6">
-                        <h1 class="receiptTypeTitle">Work Order <small>#{{ Workorder.workorderID }}</small></h1>
-                        {% if parameters.type == 'shop-tag' %}
-                            {% if Workorder.hookIn|strlen > 0 or Workorder.hookOut|strlen > 0 %}
-                                <h1 style="margin-top:20px;">Hook In: {{Workorder.hookIn}} <br />
-                                Hook Out: {{Workorder.hookOut}}</h1>
-                            {% endif %}
-                        {% endif %}
-                    </div>
-                    <div class="col-6">
-                        <div class="details">
-                            <div class="details__item">
-                                <div class="details__item__label">Started</div>
-                                <div class="details__item__value">
-                                    {{Workorder.timeIn|correcttimezone|date ("m/d/y h:i a")}}
-                                </div>
-                            </div><!-- /.item -->
-                            <div class="details__item">
-                                <div class="details__item__label">Due on</div>
-                                <div class="details__item__value">
-                                    {{Workorder.etaOut|correcttimezone|date ("m/d/y h:i a")}}
-                                </div>
-                            </div><!-- /.item -->
-                            {% for serializedID in Workorder.Serialized %}
-                            <div class="details__item">
-                                <div class="details__item__label">Work Order Item</div>
-                                <div class="details__item__value">
-                                    {% if Workorder.Serialized.description|strlen > 0 %}
-                                        {{ Workorder.Serialized.description }}
-                                    {% elseif Workorder.Serialized.Item.description|strlen > 0 %}
-                                        {{ Workorder.Serialized.Item.description }}
-                                    {% endif %}
-                                    {% if Workorder.Serialized.colorName|strlen > 0 %}
-                                        / {{ Workorder.Serialized.colorName }}
-                                    {% endif %}
-                                    {% if Workorder.Serialized.sizeName|strlen > 0 %}
-                                        / {{ Workorder.Serialized.sizeName }}
-                                    {% endif %}
-                                    {% if Workorder.Serialized.serial|strlen > 0 %}
-                                        / {{ Workorder.Serialized.serial }}
-                                    {% endif %}
-                                </div>
-                            </div><!-- /.item -->
-                            {% endfor %}
+                        <div class="details text-left">
                             <div class="details__item">
                                 <div class="details__item__label">Customer</div>
                                 <div class="details__item__value">
@@ -532,48 +546,111 @@ img.barcode {
                                 </div>
                             </div><!-- /.item -->
                         </div>
-                        
+                    </div>
+                    <div class="col-6">
+                        <div class="details">
+                            <div class="details__item">
+                                <div class="details__item__label">Started</div>
+                                <div class="details__item__value">
+                                    {{Workorder.timeIn|correcttimezone|date ("m/d/y h:i a")}}
+                                </div>
+                            </div><!-- /.item -->
+                            <div class="details__item">
+                                <div class="details__item__label">Due on</div>
+                                <div class="details__item__value">
+                                    {{Workorder.etaOut|correcttimezone|date ("m/d/y h:i a")}}
+                                </div>
+                            </div><!-- /.item -->
+                            {#
+                            {% for serializedID in Workorder.Serialized %}
+                            <div class="details__item">
+                                <div class="details__item__label">Work Order Item</div>
+                                <div class="details__item__value">
+                                    {% if Workorder.Serialized.description|strlen > 0 %}
+                                        {{ Workorder.Serialized.description }}
+                                    {% elseif Workorder.Serialized.Item.description|strlen > 0 %}
+                                        {{ Workorder.Serialized.Item.description }}
+                                    {% endif %}
+                                    
+                                    {% if Workorder.Serialized.colorName|strlen > 0 %}
+                                        / {{ Workorder.Serialized.colorName }}
+                                    {% endif %}
+                                    {% if Workorder.Serialized.sizeName|strlen > 0 %}
+                                        / {{ Workorder.Serialized.sizeName }}
+                                    {% endif %}
+                                    {% if Workorder.Serialized.serial|strlen > 0 %}
+                                        / {{ Workorder.Serialized.serial }}
+                                    {% endif %}
+                                    
+                                </div>
+                            </div><!-- /.item -->
+                            {% endfor %}
+                            #}
+                        </div>
                     </div>
                 </div>
+                <h1 class="receiptTypeTitle">
+                    Work Order
+                    {% for serializedID in Workorder.Serialized %}
+                        |
+                        <small>
+                        {% if Workorder.Serialized.description|strlen > 0 %}
+                            {{ Workorder.Serialized.description }}
+                        {% elseif Workorder.Serialized.Item.description|strlen > 0 %}
+                            {{ Workorder.Serialized.Item.description }}
+                        {% endif %}
+                        </small>
+                    {% endfor %}
+                </h1>
+                {% if parameters.type == 'shop-tag' %}
+                    {% if Workorder.hookIn|strlen > 0 or Workorder.hookOut|strlen > 0 %}
+                        <h1 style="margin-top:20px;">Hook In: {{Workorder.hookIn}} <br />
+                        Hook Out: {{Workorder.hookOut}}</h1>
+                    {% endif %}
+                {% endif %}
             </div>
 
             <table class="lines">
                 <tr>
-                    <th class="table__th" style="text-align: left;">Item/Labor</th>
-                    <th class="table__th">Notes</th>
-                    <th class="table__th" style="text-align: right">Charge</th>
+                    <th class="table__th description text-left">Description</th>                    
+                    <th class="table__th text-left">Notes</th>
+                    <th class="table__th quantity">Amount</th>
+                    <th class="table__th text-right">Charge</th>
                 </tr>
                 {% for WorkorderItem in Workorder.WorkorderItems.WorkorderItem %}
                 <tr>
-                    {% if WorkorderLine.itemID != 0 %}
-                        <td class="description">
-                        </td>
-                    {% else %}
-                        <td class="description">
-                            {% if WorkorderItem.unitQuantity > 0 %}
-                                {{ WorkorderItem.unitQuantity }} &times;
-                            {% endif %}
-                            {{ WorkorderItem.Item.description }}
-                            {% if WorkorderItem.Discount %}
-                                <p>Discount: {{ WorkorderItem.Discount.name }} (-{{ WorkorderItem.SaleLine.calcLineDiscount|money }})</p>
-                            {% endif %}
-                         </td>
-                    {% endif %}
-                
-                        <td class="td__notes">
-                            {{ WorkorderItem.note }}
-                        </td>
-
-                        {% if WorkorderItem.warranty == 'true' %}
-                            <td class="amount"> $0.00
+                {% if WorkorderLine.itemID != 0 %}
+                    <td class="description">
+                    </td>
+                {% else %}
+                    <td class="description">
+                        {{ WorkorderItem.Item.description }}
+                        {% if WorkorderItem.Discount %}
+                            <p>Discount: {{ WorkorderItem.Discount.name }} (-{{ WorkorderItem.SaleLine.calcLineDiscount|money }})</p>
                         {% endif %}
-                    
-                        {% if WorkorderItem.warranty == 'false' %}
-                            <td class="amount">        
-                                {{ WorkorderItem.SaleLine.calcSubtotal|money }}
-                            </td>
+                    </td>
+                {% endif %}                
+                    <td class="td__notes">
+                        {{ WorkorderItem.note }}
+                    </td>
+                    <td class="quantity">
+                        {% if WorkorderItem.unitQuantity > 0 %}
+                            {{ WorkorderItem.unitQuantity }}
+                        {% else %}
+                        &mdash;
                         {% endif %}
-                    </tr>
+                    </td>
+                {% if WorkorderItem.warranty == 'true' %}
+                    <td class="amount">
+                        {{ 0|money }}
+                    </td>
+                {% endif %}                    
+                {% if WorkorderItem.warranty == 'false' %}
+                    <td class="amount">        
+                        {{ WorkorderItem.SaleLine.calcSubtotal|money }}
+                    </td>
+                {% endif %}
+                </tr>
                 {% endfor %}
                 
                 {% for WorkorderLine in Workorder.WorkorderLines.WorkorderLine %} <!--this loop is necessary for showing labor charges -->
@@ -598,7 +675,13 @@ img.barcode {
                                 {% endif %}
                             </td>
                         {% endif %}
-                        
+                        <td class="quantity">
+                            {% if WorkorderItem.unitQuantity > 0 %}
+                                {{ WorkorderItem.unitQuantity }}
+                            {% else %}
+                            &mdash;
+                            {% endif %}
+                        </td>
                         <td class="amount">
                             {{ WorkorderLine.SaleLine.calcSubtotal|money }}
                         </td>
@@ -646,9 +729,11 @@ img.barcode {
                     </tr>
                 </tbody>
             </table>
+            <div class="clear"></div>
 
             <hr class="footer__hr">
-
+            
+            <footer>
             {% if Workorder.note|strlen > 0 %}
                 <div class="notes">
                     <h3>Notes</h3>
@@ -746,21 +831,26 @@ img.barcode {
                 </span>
             </p>
             
+            {% if show_barcode %}
             <img height="50" width="250" class="barcode" src="/barcode.php?type=receipt&number={{Workorder.systemSku}}">
+            {% else %}
+                <br/>
+                <br/>
+            {% endif %}
             
             {% if parameters.type == 'invoice' %}
                 {% if Workorder.Shop.ReceiptSetup.workorderAgree|strlen > 0 %}
-                    <div style="padding: 10px 0px">
-                        <p style="margin-bottom:40px;">{{ Workorder.Shop.ReceiptSetup.workorderAgree|noteformat|raw }}</p>
+                <div class="text-center" style="margin-bottom:20px;">
+                    <p class="notes" style="margin-bottom:40px;">{{ Workorder.Shop.ReceiptSetup.workorderAgree|noteformat|raw }}</p>
+                    <p>
                         X_______________________________
                         <br/>
                         {{ Workorder.Customer.firstName}} {{ Workorder.Customer.lastName}}
-                    </div>
-            </div>
-
-
+                    </p>
+                </div>
+                {% endif %}
             {% endif %}
-        {% endif %}
+            </footer>
     
     {% endfor %}
 
