@@ -1464,6 +1464,14 @@ table.saletotals {
 			{% endif %}
 		</td>
 
+		<td class="amount amount--without-btw">
+			{{ Line.calcSubtotal|money }}
+		</td>
+
+		<td class="amount amount--without-btw">
+			{{ Line.calcTax1|money }}
+		</td>
+
 		<td data-automation="lineItemPrice" class="amount">
 			{% if not parameters.gift_receipt %}
 				{% if options.discounted_line_items and not options.per_line_subtotal and Line.calcLineDiscount != 0 %}
@@ -1499,6 +1507,8 @@ table.saletotals {
 				<th class="quantity table__th">Amount</th>
 
 				{% if not parameters.gift_receipt %}
+					<th class="amount table__th">Subtotal</th>
+					<th class="amount table__th">BTW</th>
 					<th class="amount table__th">Price</th>
 				{% endif %}
 			</tr>
@@ -1524,7 +1534,7 @@ table.saletotals {
 							{% if options.discounted_line_items %}
 								{{ subtract(Sale.displayableSubtotal, Sale.calcDiscount)|money}}
 							{% else %}
-								{{Sale.displayableSubtotal|money}}
+								{{Sale.calcTaxable|money}}
 							{% endif %}
 						</td>
 					</tr>
